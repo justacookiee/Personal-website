@@ -1,24 +1,57 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>Homepage</title>
-	<link rel="stylesheet" href="style.css">
-</head>
-<body>
-	<h1>Home</h1>
-	<table>
-		<tr>
-			<th>Navigation</th>
-			<th>Description</th>
-		</tr>
-		<tr>
-			<td><a href="pages/1.html">Authoritative sources</a></td>
-			<td>I am trying to compile a list of authoritative sources in various domains, and what kind of information I can get from them.</td>
-		</tr>
-		<tr>
-			<td></td>
-			<td></td>
-		</tr>
-	</table>
-</body>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>GitHub Pages Renderer</title>
+		<style>
+			body {
+				font-family: system-ui, sans-serif;
+				margin: 2rem;
+			}
+			#files button {
+				display: block;
+				margin: 0.5rem 0;
+			}
+			#content {
+				border: 1px solid #ccc;
+				padding: 1rem;
+				margin-top: 2rem;
+			}
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+		<script src="script.js"></script>
+	</head>
+	<body>
+		<select name="filelist" id="filelist">
+		</select>
+		<h2 id='heading'></h2>
+		<div id="content">Select a file</div>
+		<div id="files"></div>
+		<script>
+			const filelist1 = document.getElementById('filelist');
+			console.log(window.pages)
+			document.addEventListener('fileListLoaded', () => {
+				let count = 0;
+				window.pages
+					.filter(f => f.type == 'file')
+					.forEach(file => {
+						if(count == 0) count += addOption(file);
+						else addOption(file); 
+						if(count == 1) {
+							loadFile(file.download_url);
+							count++;
+						}
+					});
+			});
+			function addOption(file) {
+				if(!file.download_url) return 0;
+				filelist1.appendChild(new Option(file.name, file.download_url, false, false));
+				return 1;
+			}
+			filelist1.addEventListener('change', (event) => {
+				loadFile(event.target.value);
+			});
+
+		</script>
+	</body>
 </html>

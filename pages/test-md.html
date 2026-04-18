@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Minimal File Viewer</title>
+
+  <!-- Minimal Markdown parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; }
+    #files button { display: block; margin: 4px 0; }
+    #viewer { margin-top: 20px; padding: 12px; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+<h2>Files</h2>
+<input type="file" multiple />
+
+<div id="files"></div>
+
+<div id="viewer">Select a file…</div>
+
+<script>
+const API_URL = "https://api.github.com/repos/justacookiee/Personal-website/contents/pages";
+let pages = [];
+
+fetch(API_URL)
+      .then(response => response.json())
+      .then(data => {
+        pages = data;        // ✅ feed into JS variable
+        renderFileList(pages);
+      })
+      .catch(err => {
+        console.error("Failed to fetch page list", err);
+      });
+
+const input = document.querySelector('input');
+const fileList = document.getElementById('files');
+const viewer = document.getElementById('viewer');
+
+input.addEventListener('change', () => {
+  fileList.innerHTML = '';
+  [...input.files].forEach(file => {
+    const btn = document.createElement('button');
+    btn.textContent = file.name;
+    btn.onclick = () => showFile(file);
+    fileList.appendChild(btn);
+  });
+});
+
+function showFile(file) {
+  console.log(file)
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (file.name.endsWith('.md')) {
+      viewer.innerHTML = marked.parse(reader.result);
+    } else {
+      viewer.textContent = reader.result;
+    }
+  };
+  reader.readAsText(file);
+}
+</script>
+
+</body>
+</html>
